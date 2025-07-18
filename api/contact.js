@@ -1,29 +1,33 @@
-import { connectToDatabase } from '../utils/db.js';
-import { sendContactEmail } from '../utils/mailer.js';
+// api/contact.js
+import nodemailer from "nodemailer";
 
 export default async function handler(req, res) {
   if (req.method !== "POST") {
-    return res.status(405).json({ message: "Method Not Allowed" });
+    return res.status(405).json({ error: "Only POST allowed" });
   }
 
-  try {
-    const { name, email, subject, message } = req.body;
+  const { name, email, contact, subject, message } = req.body;
 
-    const client = await connectToDatabase();
-    const db = client.db();
-    await db.collection("contacts").insertOne({
-      name,
-      email,
-      subject,
-      message,
-      createdAt: new Date()
+  try {
+    // send email logic
+    const transporter = nodemailer.createTransport({
+      service: process.env.EMAIL_SERVICE,
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
     });
 
-    await sendContactEmail({ name, email, subject, message });
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to: email,
+      subject: subject || "Portfolio Contact",
+      html: `<h3>From: ${name}</h3><p>${message}</p><p>Contact: ${contact}</p>`,
+    });
 
-    res.status(201).json({ message: "Success: Saved & Sent!" });
-  } catch (err) {
-    console.error("Error in contact:", err);
-    res.status(500).json({ error: "Internal Server Error" });
+    res.status(200).json({ message: "Email sent successfully" });
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).json({ error: "Failed to send email" });
   }
 }
