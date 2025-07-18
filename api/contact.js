@@ -1,26 +1,30 @@
-const mongoose = require('mongoose');
-const Contact = require('../models/contact.model');
-const { sendReplyEmail } = require('../utils/emailSender');
+// api/contact.js
+import { connectToDatabase } from "../utils/db";
+import { sendContactEmail }   from "../utils/mailer";
 
-let isConnected = false;
-
-module.exports = async (req, res) => {
-  if (!isConnected) {
-    await mongoose.connect(process.env.MONGO_URI);
-    isConnected = true;
+export default async function handler(req, res) {
+  // Only allow POST
+  if (req.method !== "POST") {
+    res.setHeader("Allow", "POST");
+    return res.status(405).json({ error: "Method Not Allowed" });
   }
 
-  if (req.method === 'POST') {
-    try {
-      const { name, email, contact, subject, message } = req.body;
-      const newContact = new Contact({ name, email, contact, subject, message });
-      await newContact.save();
-      await sendReplyEmail(email, name); // optional reply
-      res.status(200).json({ success: true, message: "Message sent!" });
-    } catch (err) {
-      res.status(500).json({ success: false, error: err.message });
-    }
-  } else {
-    res.status(405).json({ error: "Method not allowed" });
+  try {
+    const { name, email, subject, message } = JSON.parse(req.body);
+
+    // 1) Save to MongoDB
+    const client = await connectToDatabase();
+    const db = client.db(); // default DB from URI
+    await db
+      .collection("contacts")
+      .insertOne({ name, email, subject, message, createdAt: new Date() });
+
+    // 2) Send you an email
+    await sendContactEmail({ name, email, subject, message });
+
+    return res.status(201).json({ message: "Contact saved & email sent." });
+  } catch (err) {
+    console.error("Contact handler error:", err);
+    return res.status(500).json({ error: "Internal Server Error" });
   }
-};
+}
