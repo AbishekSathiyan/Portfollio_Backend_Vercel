@@ -1,30 +1,29 @@
-// api/contact.js
-import { connectToDatabase } from "../utils/db";
-import { sendContactEmail }   from "../utils/mailer";
+import { connectToDatabase } from '../utils/db.js';
+import { sendContactEmail } from '../utils/mailer.js';
 
 export default async function handler(req, res) {
-  // Only allow POST
   if (req.method !== "POST") {
-    res.setHeader("Allow", "POST");
-    return res.status(405).json({ error: "Method Not Allowed" });
+    return res.status(405).json({ message: "Method Not Allowed" });
   }
 
   try {
-    const { name, email, subject, message } = JSON.parse(req.body);
+    const { name, email, subject, message } = req.body;
 
-    // 1) Save to MongoDB
     const client = await connectToDatabase();
-    const db = client.db(); // default DB from URI
-    await db
-      .collection("contacts")
-      .insertOne({ name, email, subject, message, createdAt: new Date() });
+    const db = client.db();
+    await db.collection("contacts").insertOne({
+      name,
+      email,
+      subject,
+      message,
+      createdAt: new Date()
+    });
 
-    // 2) Send you an email
     await sendContactEmail({ name, email, subject, message });
 
-    return res.status(201).json({ message: "Contact saved & email sent." });
+    res.status(201).json({ message: "Success: Saved & Sent!" });
   } catch (err) {
-    console.error("Contact handler error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error in contact:", err);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 }

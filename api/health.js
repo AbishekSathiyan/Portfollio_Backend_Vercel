@@ -1,4 +1,3 @@
-// api/health.js
-export default function handler(_, res) {
-  res.status(200).json({ status: "OK" });
+export default function handler(req, res) {
+  res.status(200).json({ message: "Health check OK!" });
 }

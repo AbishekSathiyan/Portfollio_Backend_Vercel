@@ -1,4 +1,3 @@
-// utils/mailer.js
 import nodemailer from "nodemailer";
 
 export const transporter = nodemailer.createTransport({
@@ -13,12 +12,13 @@ export async function sendContactEmail({ name, email, subject, message }) {
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: process.env.EMAIL_USER,
-    subject: `New contact from ${name}: ${subject}`,
+    subject: `New Message: ${subject}`,
     html: `
-      <p><strong>Name:</strong> ${name}</p>
-      <p><strong>Email:</strong> ${email}</p>
-      <p><strong>Message:</strong><br/>${message}</p>
+      <p><b>Name:</b> ${name}</p>
+      <p><b>Email:</b> ${email}</p>
+      <p><b>Message:</b><br>${message}</p>
     `,
   };
+
   return transporter.sendMail(mailOptions);
 }
