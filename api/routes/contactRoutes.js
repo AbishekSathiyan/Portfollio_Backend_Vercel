@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Contact = require("../models/contact.model");
-const { sendReplyEmail } = require("../utils/emailSender");
+const { sendReplyEmail } = require("../../utils/emailSender");
 
 router.post("/", async (req, res) => {
   try {

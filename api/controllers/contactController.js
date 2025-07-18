@@ -1,6 +1,6 @@
 const asyncHandler = require("express-async-handler");
 const Contact = require("../models/Contact");
-const { sendReplyEmail } = require("../utils/emailSender");
+const { sendReplyEmail } = require("../../utils/emailSender");
 
 /* ------------------------------------------------------------------ */
 /*  POST /api/contacts  |  Public  |  Create a new contact + auto‑reply */
