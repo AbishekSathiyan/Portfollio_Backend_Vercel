@@ -1,6 +1,6 @@
-const asyncHandler = require('express-async-handler');
-const Contact = require('../models/contact.model');
-const { sendReplyEmail } = require('../utils/emailSender');
+const asyncHandler = require("express-async-handler");
+const Contact = require("../models/contact.model");
+const { sendReplyEmail } = require("../utils/emailSender");
 
 exports.createContact = asyncHandler(async (req, res) => {
   const { name, email, contact, subject, message } = req.body;

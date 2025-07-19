@@ -1,6 +1,7 @@
-import nodemailer from "nodemailer";
+const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-export const transporter = nodemailer.createTransport({
+const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE,
   auth: {
     user: process.env.EMAIL_USER,
@@ -8,7 +9,7 @@ export const transporter = nodemailer.createTransport({
   },
 });
 
-export async function sendContactEmail({ name, email, subject, message }) {
+async function sendContactEmail({ name, email, subject, message }) {
   const mailOptions = {
     from: process.env.EMAIL_FROM,
     to: process.env.EMAIL_USER,
@@ -22,3 +23,8 @@ export async function sendContactEmail({ name, email, subject, message }) {
 
   return transporter.sendMail(mailOptions);
 }
+
+module.exports = {
+  transporter,
+  sendContactEmail,
+};

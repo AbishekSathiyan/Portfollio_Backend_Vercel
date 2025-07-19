@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "Serverless backend for portfolio contact form using Vercel",
   "main": "api/index.js",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "start": "node api/index.js",
     "dev": "nodemon api/index.js"
