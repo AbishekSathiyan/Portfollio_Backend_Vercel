@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const Contact = require("../models/contactmodel");
+const Contact = require("../models/contact.model");
 const { sendReplyEmail } = require("../utils/emailSender");
 
 // @desc    Create a new contact entry
