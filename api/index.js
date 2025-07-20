@@ -1,29 +1,28 @@
-require("dotenv").config(); // Load environment variables
+// api/index.js
+require("dotenv").config();
 
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const contactRoutes = require("./routes/contact.routes"); // ✅ FIXED relative path
+const contactRoutes = require("./routes/contact.routes");
 
 const app = express();
-
-// Environment variables
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
 
-// Middleware
-app.use(cors({ origin: "*" }));
+// Middlewares
+app.use(cors());
 app.use(express.json());
 
-// Test Route
+// Test route
 app.get("/api", (req, res) => {
   res.send("API is running ✅");
 });
 
-// Contact API Route
+// Routes
 app.use("/api/contacts", contactRoutes);
 
-// MongoDB Connection & Server Start
+// MongoDB connection and server start
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
@@ -32,10 +31,9 @@ mongoose
   .then(() => {
     console.log("✅ MongoDB connected successfully");
     app.listen(PORT, () => {
-      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🚀 Server running at http://localhost:${PORT}`);
     });
   })
   .catch((err) => {
-    console.error("❌ MongoDB connection failed:", err.message);
-    process.exit(1);
+    console.error("❌ MongoDB connection error:", err.message);
   });

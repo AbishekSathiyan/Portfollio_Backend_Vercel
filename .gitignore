@@ -1,11 +1,43 @@
-# Ignore both node_modules
-client/node_modules/
-server/node_modules/
+# Node modules
+node_modules/
 
-# Ignore builds
-client/build/
-server/dist/
+# Environment variables
+.env
 
-# Ignore env files
-client/.env
-server/.env
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Optional npm cache directory
+.npm/
+
+# Debug files
+*.local
+
+# Vercel / deployment configs (optional)
+.vercel/
+.netlify/
+
+# IDEs and editors
+.vscode/
+.idea/
+
+# Coverage files
+coverage/
+
+# Build folders
+dist/
+build/
+
+# MongoDB dump files
+dump/
+
+# Firebase emulators or functions cache (optional)
+.firebase/

@@ -1,48 +1,31 @@
-const mongoose = require('mongoose');
-const validator = require('validator');
+const mongoose = require("mongoose");
 
 const contactSchema = new mongoose.Schema(
   {
-    name: {
-      type: String,
-      required: [true, "Name is required"],
-      trim: true,
-      maxlength: 100,
-    },
-    email: {
-      type: String,
-      required: [true, "Email is required"],
-      trim: true,
-      lowercase: true,
-      validate: [validator.isEmail, "Please provide a valid email"],
-    },
-    contact: {
-      type: String,
-      required: [true, "Contact number is required"],
-      trim: true,
-      validate: {
-        validator: v => /^[0-9]{10,15}$/.test(v),
-        message: "Contact number must be 10-15 digits",
-      },
-    },
-    subject: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 200,
-    },
-    message: {
-      type: String,
-      required: true,
-      trim: true,
-      maxlength: 2000,
-    },
-    isRead: {
-      type: Boolean,
-      default: false,
-    },
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    message: { type: String, required: true },
   },
   { timestamps: true }
 );
 
-module.exports = mongoose.model('Contact', contactSchema);
+// Optional: Add virtuals to format createdAt and updatedAt
+contactSchema.virtual("createdAtFormatted").get(function () {
+  return this.createdAt.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "full",
+    timeStyle: "medium",
+  });
+});
+
+contactSchema.virtual("updatedAtFormatted").get(function () {
+  return this.updatedAt.toLocaleString("en-IN", {
+    timeZone: "Asia/Kolkata",
+    dateStyle: "full",
+    timeStyle: "medium",
+  });
+});
+
+contactSchema.set("toJSON", { virtuals: true });
+
+module.exports = mongoose.model("Contact", contactSchema);
