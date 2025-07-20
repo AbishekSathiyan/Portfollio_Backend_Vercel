@@ -1,5 +1,4 @@
-// api/index.js
-require("dotenv").config();
+require("dotenv").config({ path: "../.env" });
 
 const express = require("express");
 const mongoose = require("mongoose");
@@ -14,15 +13,15 @@ const MONGODB_URI = process.env.MONGODB_URI;
 app.use(cors());
 app.use(express.json());
 
-// Test route
-app.get("/api", (req, res) => {
-  res.send("API is running ✅");
+// Basic test route
+app.get("/", (req, res) => {
+  res.send("Welcome to the Portfolio Backend API");
 });
 
-// Routes
+// API Routes
 app.use("/api/contacts", contactRoutes);
 
-// MongoDB connection and server start
+// MongoDB connection
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
