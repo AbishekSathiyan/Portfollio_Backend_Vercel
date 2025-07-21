@@ -2,16 +2,26 @@ const express = require("express");
 const router = express.Router();
 const Contact = require("../models/contact.model");
 
-// 📥 POST /api/contacts - Save a contact
-// POST /api/contacts
+// POST /api/contacts - Save a contact
 router.post("/", async (req, res) => {
   try {
     const { name, email, contact, subject, message } = req.body;
 
-    if (!name || !email || !contact || !subject || !message) {
-      return res.status(400).json({ error: "All fields are required" });
+    // Validate required fields
+    if (!name || !email || !message) {
+      return res.status(400).json({ success: false, error: "All fields are required" });
     }
 
+    // Check for duplicate (same name + email + message)
+    const existing = await Contact.findOne({ name, email, message });
+    if (existing) {
+      return res.status(400).json({
+        success: false,
+        error: "❌ You have already submitted this message.",
+      });
+    }
+
+    // Create new contact
     const newContact = new Contact({
       name,
       email,
@@ -24,34 +34,12 @@ router.post("/", async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "✅ Contact saved successfully",
+      message: "✅ Message sent successfully!",
       data: newContact,
     });
   } catch (error) {
-    console.error("❌ Error saving contact:", error);
-    res.status(500).json({ error: "Server error" });
-  }
-});
-
-
-// ✅ GET /api/contacts - Return all contacts
-router.get("/", async (req, res) => {
-  try {
-    const contacts = await Contact.find().sort({ createdAt: -1 });
-
-    return res.status(200).json({
-      success: true,
-      message: "✅ Contacts fetched successfully",
-      count: contacts.length,
-      data: contacts,
-    });
-  } catch (error) {
-    console.error("❌ Error fetching contacts:", error);
-
-    return res.status(500).json({
-      success: false,
-      error: `Failed to fetch contacts: ${error.message}`,
-    });
+    console.error("Error submitting contact:", error.message);
+    res.status(500).json({ success: false, error: "Server error. Please try again later." });
   }
 });
 
