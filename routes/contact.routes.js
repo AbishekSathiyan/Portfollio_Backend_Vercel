@@ -2,26 +2,29 @@ const express = require("express");
 const router = express.Router();
 const Contact = require("../models/contact.model");
 
-// POST /api/contacts - Save a contact
+// 📥 POST /api/contacts - Save a contact
 router.post("/", async (req, res) => {
   try {
     const { name, email, contact, subject, message } = req.body;
 
-    // Validate required fields
-    if (!name || !email || !message) {
-      return res.status(400).json({ success: false, error: "All fields are required" });
-    }
-
-    // Check for duplicate (same name + email + message)
-    const existing = await Contact.findOne({ name, email, message });
-    if (existing) {
+    // 🔍 Validation check
+    if (!name || !email || !contact || !subject || !message) {
       return res.status(400).json({
         success: false,
-        error: "❌ You have already submitted this message.",
+        message: "❌ All fields are required.",
       });
     }
 
-    // Create new contact
+    // 🔁 Duplicate check (based on email and message)
+    const isDuplicate = await Contact.findOne({ email, message });
+    if (isDuplicate) {
+      return res.status(409).json({
+        success: false,
+        message: "⚠️ Duplicate message already received from this email.",
+      });
+    }
+
+    // ✅ Save new contact
     const newContact = new Contact({
       name,
       email,
@@ -38,8 +41,40 @@ router.post("/", async (req, res) => {
       data: newContact,
     });
   } catch (error) {
-    console.error("Error submitting contact:", error.message);
-    res.status(500).json({ success: false, error: "Server error. Please try again later." });
+    console.error("❌ Error saving contact:", error);
+
+    // MongoDB duplicate key error
+    if (error.code === 11000) {
+      return res.status(409).json({
+        success: false,
+        message: "⚠️ Duplicate entry detected. Please check your message.",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "❌ Server error. Please try again later.",
+    });
+  }
+});
+
+// ✅ GET /api/contacts - Fetch all
+router.get("/", async (req, res) => {
+  try {
+    const contacts = await Contact.find().sort({ createdAt: -1 });
+
+    res.status(200).json({
+      success: true,
+      message: "✅ Contacts fetched successfully",
+      count: contacts.length,
+      data: contacts,
+    });
+  } catch (error) {
+    console.error("❌ Error fetching contacts:", error);
+    res.status(500).json({
+      success: false,
+      message: `❌ Failed to fetch contacts: ${error.message}`,
+    });
   }
 });
 
