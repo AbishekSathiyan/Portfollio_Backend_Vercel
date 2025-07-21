@@ -17,6 +17,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Welcome to the Portfolio Backend API");
 });
+app.get("/api", (req, res) => {
+  res.send("Welcome to the Portfolio Backend API");
+});
 
 // API Routes
 app.use("/api/contacts", contactRoutes);
