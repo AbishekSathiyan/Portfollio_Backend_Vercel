@@ -5,16 +5,18 @@ const Contact = require("../models/contact.model");
 // POST /api/contacts - Save a contact
 router.post("/", async (req, res) => {
   try {
-    console.log("📥 Received contact form data:", req.body); // 👈 add this
+    console.log("📥 Received contact form data:", req.body);
 
     const { name, email, contact, subject, message } = req.body;
 
+    // Manual validation
     if (!name || !email || !message) {
       return res
         .status(400)
         .json({ error: "Name, Email, and Message are required" });
     }
 
+    // Save to MongoDB
     const newContact = new Contact({
       name,
       email,
@@ -26,8 +28,13 @@ router.post("/", async (req, res) => {
     await newContact.save();
 
     res.status(201).json({ message: "Contact submitted successfully" });
-  } catch (err) {
-    console.error("❌ Error submitting contact:", err); // 👈 log full error
+  } catch (error) {
+    console.error("❌ Error saving contact:", error.message);
+
+    if (error.name === "ValidationError") {
+      return res.status(400).json({ error: error.message });
+    }
+
     res.status(500).json({ error: "Server error" });
   }
 });
