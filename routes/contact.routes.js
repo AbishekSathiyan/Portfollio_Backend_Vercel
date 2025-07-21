@@ -3,52 +3,36 @@ const router = express.Router();
 const Contact = require("../models/contact.model");
 
 // 📥 POST /api/contacts - Save a contact
+// POST /api/contacts
 router.post("/", async (req, res) => {
-  console.log("📥 Received contact form data:", req.body);
-
   try {
     const { name, email, contact, subject, message } = req.body;
 
-    // 🔒 Basic validation
-    if (!name || !email || !message) {
-      return res.status(400).json({
-        success: false,
-        error: "Name, Email, and Message are required fields",
-      });
+    if (!name || !email || !contact || !subject || !message) {
+      return res.status(400).json({ error: "All fields are required" });
     }
 
-    // 💾 Save to MongoDB
     const newContact = new Contact({
       name,
       email,
-      contact: contact || null,   // Optional
-      subject: subject || null,   // Optional
+      contact,
+      subject,
       message,
     });
 
-    const savedContact = await newContact.save();
+    await newContact.save();
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
-      message: "✅ Contact submitted successfully",
-      data: savedContact,
+      message: "✅ Contact saved successfully",
+      data: newContact,
     });
   } catch (error) {
     console.error("❌ Error saving contact:", error);
-
-    if (error.name === "ValidationError") {
-      return res.status(400).json({
-        success: false,
-        error: `Validation Error: ${error.message}`,
-      });
-    }
-
-    return res.status(500).json({
-      success: false,
-      error: `Internal Server Error: ${error.message}`,
-    });
+    res.status(500).json({ error: "Server error" });
   }
 });
+
 
 // ✅ GET /api/contacts - Return all contacts
 router.get("/", async (req, res) => {
