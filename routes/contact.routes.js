@@ -5,6 +5,8 @@ const Contact = require("../models/contact.model");
 // POST /api/contacts - Save a contact
 router.post("/", async (req, res) => {
   try {
+    console.log("📥 Received contact form data:", req.body); // 👈 add this
+
     const { name, email, contact, subject, message } = req.body;
 
     if (!name || !email || !message) {
@@ -22,9 +24,10 @@ router.post("/", async (req, res) => {
     });
 
     await newContact.save();
+
     res.status(201).json({ message: "Contact submitted successfully" });
   } catch (err) {
-    console.error("❌ Error submitting contact:", err.message);
+    console.error("❌ Error submitting contact:", err); // 👈 log full error
     res.status(500).json({ error: "Server error" });
   }
 });
