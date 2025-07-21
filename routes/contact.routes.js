@@ -5,12 +5,22 @@ const Contact = require("../models/contact.model");
 // POST /api/contacts - Save a contact
 router.post("/", async (req, res) => {
   try {
-    const { name, email, message } = req.body;
+    const { name, email, contact, subject, message } = req.body;
+
     if (!name || !email || !message) {
-      return res.status(400).json({ error: "All fields are required" });
+      return res
+        .status(400)
+        .json({ error: "Name, Email, and Message are required" });
     }
 
-    const newContact = new Contact({ name, email, message });
+    const newContact = new Contact({
+      name,
+      email,
+      contact,
+      subject,
+      message,
+    });
+
     await newContact.save();
     res.status(201).json({ message: "Contact submitted successfully" });
   } catch (err) {
