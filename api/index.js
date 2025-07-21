@@ -17,8 +17,9 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("Welcome to the Portfolio Backend API");
 });
+
 app.get("/api", (req, res) => {
-  res.send("Welcome to the Portfolio Backend API");
+  res.send("API is running ✅");
 });
 
 // API Routes
