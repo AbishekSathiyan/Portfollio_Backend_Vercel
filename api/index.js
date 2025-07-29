@@ -4,14 +4,15 @@ import mongoose from "mongoose";
 import cors from "cors";
 import contactRoutes from "../routes/contact.routes.js";
 import errorHandler from "../middleware/errorHandler.js";
-import { sendReplyEmail } from "../utils/sendContactReply.js";
+import sendReplyEmail from "../utils/sendContactReply.js";
+
 
 // Load env variables
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI = process.env.MONGODB_URI; // Ensure this key is present in your .env file
+const MONGO_URI = process.env.MONGODB_URI;
 
 // Middleware
 app.use(cors());
@@ -20,14 +21,12 @@ app.use(express.json());
 // Routes
 app.use("/api/contacts", contactRoutes);
 
-console.log("Current directory:", process.cwd());
-
 // Root route
 app.get("/", (_req, res) => {
   res.send("🚀 Welcome to the Portfolio Backend API");
 });
 
-// Global Error Handler
+// Global error handler
 app.use(errorHandler);
 
 // DB Connection
