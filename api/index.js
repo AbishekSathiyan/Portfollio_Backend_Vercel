@@ -1,33 +1,38 @@
-require("dotenv").config({ path: "../.env" });
+import dotenv from "dotenv";
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import contactRoutes from "../routes/contact.routes.js";
+import errorHandler from "../middleware/errorHandler.js";
+import { sendReplyEmail } from "../utils/sendContactReply.js";
 
-const express = require("express");
-const mongoose = require("mongoose");
-const cors = require("cors");
-const contactRoutes = require("../routes/contact.routes");
+// Load env variables
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGODB_URI = process.env.MONGODB_URI;
+const MONGO_URI = process.env.MONGODB_URI; // Ensure this key is present in your .env file
 
-// Middlewares
+// Middleware
 app.use(cors());
 app.use(express.json());
 
-// Basic test route
-app.get("/", (req, res) => {
-  res.send("Welcome to the Portfolio Backend API");
-});
-
-app.get("/api", (req, res) => {
-  res.send("API is running ✅");
-});
-
-// API Routes
+// Routes
 app.use("/api/contacts", contactRoutes);
 
-// MongoDB connection
+console.log("Current directory:", process.cwd());
+
+// Root route
+app.get("/", (_req, res) => {
+  res.send("🚀 Welcome to the Portfolio Backend API");
+});
+
+// Global Error Handler
+app.use(errorHandler);
+
+// DB Connection
 mongoose
-  .connect(MONGODB_URI, {
+  .connect(MONGO_URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
