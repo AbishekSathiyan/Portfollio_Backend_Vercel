@@ -25,15 +25,16 @@ export const createContact = asyncHandler(async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "✅ Message sent successfully!",
+      message: "✅ Form Submitted Successfully!",
       data: newContact,
     });
   } catch (err) {
-    console.error("❌ Email sending failed:", err.message);
+    console.error("❌ Email sending failed:");
 
     res.status(500).json({
       success: false,
-      message: "❌ Message saved but email failed to send.",
+      message:
+        "📬 Thanks! We’ve saved your message. The confirmation email will be sent shortly once it goes through.",
       error: err.message,
       data: newContact,
     });
