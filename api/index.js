@@ -25,6 +25,10 @@ app.get("/", (_req, res) => {
   res.send("🚀 Welcome to the Portfolio Backend API");
 });
 
+app.get("/api", (req, res) => {
+  res.send("✅ API is running");
+});
+
 // Global error handler
 app.use(errorHandler);
 
