@@ -1,6 +1,6 @@
 import asyncHandler from "express-async-handler";
 import Contact from "../models/contact.model.js";
-import sendReplyEmail from "../utils/sendContactReply.js";
+import { sendReplyEmail } from "../utils/sendContactReply.js";
 
 // @route   POST /api/contacts
 export const createContact = asyncHandler(async (req, res) => {
