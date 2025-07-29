@@ -4,8 +4,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import contactRoutes from "../routes/contact.routes.js";
 import errorHandler from "../middleware/errorHandler.js";
-import sendReplyEmail from "../utils/sendContactReply.js";
-
+import { sendReplyEmail } from "../utils/sendContactReply.js";
 
 // Load env variables
 dotenv.config();
