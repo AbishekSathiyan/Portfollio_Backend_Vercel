@@ -1,10 +1,11 @@
-import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
 import contactRoutes from "../routes/contact.routes.js";
 import errorHandler from "../middleware/errorHandler.js";
 import { sendReplyEmail } from "../utils/sendContactReply.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 // Load env variables
 dotenv.config();
