@@ -1,8 +1,16 @@
-// contact.routes.js (ES module style)
 import express from "express";
-import { createContact } from "../controllers/contactController.js";
+import {
+  createContact,
+  getContacts,
+  deleteContact,
+  markContactAsRead,
+} from "../controllers/contactController.js";
 
 const router = express.Router();
-router.post("/", createContact);
+
+router.post("/", createContact);               // Create new contact
+router.get("/", getContacts);                 // Get all contacts
+router.delete("/:id", deleteContact);         // Delete contact by ID
+router.patch("/:id", markContactAsRead);      // Mark as read
 
 export default router;
