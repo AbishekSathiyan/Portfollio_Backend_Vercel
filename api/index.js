@@ -4,10 +4,9 @@ import cors from "cors";
 import contactRoutes from "../routes/contact.routes.js";
 import errorHandler from "../middleware/errorHandler.js";
 import { sendReplyEmail } from "../utils/sendContactReply.js";
-import dotenv from "dotenv";
-dotenv.config();
+import adminRoutes from "../routes/adminAuth.js"; // ✅ corrected path with .js
 
-// Load env variables
+import dotenv from "dotenv";
 dotenv.config();
 
 const app = express();
@@ -19,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 
 // Routes
+app.use("/api/admin", adminRoutes); // ✅ admin auth route
 app.use("/api/contacts", contactRoutes);
 
 // Root route
