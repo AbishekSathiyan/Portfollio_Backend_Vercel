@@ -3,37 +3,43 @@ import mongoose from "mongoose";
 import cors from "cors";
 import contactRoutes from "../routes/contact.routes.js";
 import errorHandler from "../middleware/errorHandler.js";
-import { sendReplyEmail } from "../utils/sendContactReply.js";
 import adminRoutes from "../routes/adminAuth.js"; // ✅ corrected path with .js
-
 import dotenv from "dotenv";
+
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGODB_URI;
 
-// Middleware
-app.use(cors());
+// ✅ CORS middleware: allow only your frontend
+app.use(
+  cors({
+    origin: "https://abishek-portfolio-front-end.vercel.app", // frontend URL
+    credentials: true,
+  })
+);
+
+// ✅ JSON middleware
 app.use(express.json());
 
-// Routes
-app.use("/api/admin", adminRoutes); // ✅ admin auth route
+// ✅ Routes
+app.use("/api/admin", adminRoutes); // admin auth routes
 app.use("/api/contacts", contactRoutes);
 
-// Root route
+// ✅ Root routes
 app.get("/", (_req, res) => {
   res.send("🚀 Welcome to the Portfolio Backend API");
 });
 
-app.get("/api", (req, res) => {
+app.get("/api", (_req, res) => {
   res.send("✅ API is running");
 });
 
-// Global error handler
+// ✅ Global error handler
 app.use(errorHandler);
 
-// DB Connection
+// ✅ Connect to MongoDB and start server
 mongoose
   .connect(MONGO_URI, {
     useNewUrlParser: true,
