@@ -12,18 +12,21 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGODB_URI;
 
-// ✅ Allow both dev and prod origins
+// ✅ Allow multiple origins (dev & prod)
 const allowedOrigins = [
-  "https://abishek-portfolio-front-end.vercel.app",
-  "http://localhost:3000",
+  "https://abishek-portfolio-front-end.vercel.app", // original prod
+  "https://abishek-portfolio-front-bvcsetta7-abisheksathiyans-projects.vercel.app", // new prod
+  "http://localhost:3000", // dev
 ];
 
+// ✅ CORS middleware
 app.use(
   cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true); // Postman, curl etc.
+      if (!origin) return callback(null, true); // allow Postman, curl, etc.
       if (allowedOrigins.indexOf(origin) === -1) {
-        const msg = `The CORS policy for this site does not allow access from the specified Origin.`;
+        const msg =
+          "The CORS policy for this site does not allow access from the specified Origin.";
         return callback(new Error(msg), false);
       }
       return callback(null, true);
