@@ -14,9 +14,9 @@ const MONGO_URI = process.env.MONGODB_URI;
 
 // ✅ Allow multiple origins (dev & prod)
 const allowedOrigins = [
-  "https://abishek-portfolio-front-end.vercel.app", // original prod
-  "https://abishek-portfolio-front-bvcsetta7-abisheksathiyans-projects.vercel.app", // new prod
+  "https://abishek-portfolio-front-end.onrender.com", // new prod
   "http://localhost:3000", // dev
+  "http://localhost:5173", //dev
 ];
 
 // ✅ CORS middleware
