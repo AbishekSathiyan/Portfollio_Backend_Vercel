@@ -1,32 +1,29 @@
 import express from "express";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
-dotenv.config(); // ✅ Load .env variables
+dotenv.config();
 
 const router = express.Router();
-let otpStore = {}; // In-memory store (consider Redis for production)
+let otpStore = {};
 
-// Generate 6-digit OTP
+// Generate OTP
 function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// Configure Nodemailer for Gmail
+// ✅ Configure transporter
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  service: "gmail",
   auth: {
     user: process.env.MAIL_USER,
-    pass: process.env.MAIL_PASS, // Gmail App Password
+    pass: process.env.MAIL_PASS,
   },
-  tls: { rejectUnauthorized: false },
 });
 
-// ================= Send OTP =================
-router.post("/send-otp", async (_req, res) => {
+// ✅ Send OTP
+router.post("/send-otp", async (req, res) => {
   try {
-    const email = process.env.ADMIN_EMAIL || process.env.MAIL_USER;
+    const email = process.env.MAIL_USER;
     const otp = generateOtp();
     otpStore[email] = otp;
 
@@ -37,46 +34,38 @@ router.post("/send-otp", async (_req, res) => {
       to: email,
       subject: "🔐 Your Admin OTP",
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #ddd; border-radius: 10px; background-color: #f9f9f9;">
-          <h2 style="color: #333; text-align: center;">Admin OTP Verification</h2>
-          <p style="font-size: 16px; color: #555;">Your One-Time Password (OTP) is:</p>
-          <div style="text-align: center; margin: 20px 0;">
-            <span style="font-size: 36px; font-weight: bold; color: #0b74de;">${otp}</span>
-          </div>
-          <p style="font-size: 14px; color: #888;">
-            This OTP is valid for a single use. Please do not share it with anyone.
-          </p>
-          <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
-          <p style="font-size: 12px; color: #aaa; text-align: center;">
-            If you did not request this OTP, please ignore this email.
-          </p>
+        <div style="font-family: Arial, sans-serif;">
+          <h2>Admin OTP Verification</h2>
+          <p>Your One-Time Password (OTP) is:</p>
+          <h1>${otp}</h1>
+          <p>This OTP is valid for single use only.</p>
         </div>
       `,
     });
 
-    res.json({ success: true, message: "OTP sent to admin email" });
+    res.json({ success: true, message: "OTP sent successfully" });
   } catch (error) {
     console.error("❌ Error sending OTP:", error);
-    res.status(500).json({ success: false, message: "Error sending OTP" });
+    res.status(500).json({ success: false, message: error.message });
   }
 });
 
-// ================= Verify OTP =================
+// ✅ Verify OTP
 router.post("/verify-otp", async (req, res) => {
   try {
     const { otp } = req.body;
-    const email = process.env.ADMIN_EMAIL || process.env.MAIL_USER;
+    const email = process.env.MAIL_USER;
     const storedOtp = otpStore[email];
 
     if (storedOtp && otp === storedOtp) {
-      delete otpStore[email]; // Remove OTP after verification
+      delete otpStore[email];
       return res.json({ success: true, message: "OTP verified successfully" });
     }
 
     res.json({ success: false, message: "Invalid OTP" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ success: false, message: "Error verifying OTP" });
+    console.error("❌ Error verifying OTP:", error);
+    res.status(500).json({ success: false, message: "Server error" });
   }
 });
 
