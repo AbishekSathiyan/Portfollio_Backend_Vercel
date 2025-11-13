@@ -1,3 +1,4 @@
+// api/routes/adminAuth.js
 import express from "express";
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
@@ -11,7 +12,7 @@ function generateOtp() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-// ✅ Configure transporter
+// Mail setup
 const transporter = nodemailer.createTransport({
   service: "gmail",
   auth: {
@@ -36,7 +37,7 @@ router.post("/send-otp", async (req, res) => {
       html: `
         <div style="font-family: Arial, sans-serif;">
           <h2>Admin OTP Verification</h2>
-          <p>Your One-Time Password (OTP) is:</p>
+          <p>Your OTP is:</p>
           <h1>${otp}</h1>
           <p>This OTP is valid for single use only.</p>
         </div>
@@ -51,22 +52,16 @@ router.post("/send-otp", async (req, res) => {
 });
 
 // ✅ Verify OTP
-router.post("/verify-otp", async (req, res) => {
-  try {
-    const { otp } = req.body;
-    const email = process.env.MAIL_USER;
-    const storedOtp = otpStore[email];
+router.post("/verify-otp", (req, res) => {
+  const { otp } = req.body;
+  const email = process.env.MAIL_USER;
 
-    if (storedOtp && otp === storedOtp) {
-      delete otpStore[email];
-      return res.json({ success: true, message: "OTP verified successfully" });
-    }
-
-    res.json({ success: false, message: "Invalid OTP" });
-  } catch (error) {
-    console.error("❌ Error verifying OTP:", error);
-    res.status(500).json({ success: false, message: "Server error" });
+  if (otpStore[email] && otpStore[email] === otp) {
+    delete otpStore[email];
+    return res.json({ success: true, message: "OTP verified successfully" });
   }
+
+  return res.json({ success: false, message: "Invalid OTP" });
 });
 
 export default router;
